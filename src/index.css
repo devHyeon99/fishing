@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root,
+.App {
+  width: 100vw;
+  max-height: 100vh;
+}
+
+body {
+  font-family: 'SUIT Variable', sans-serif;
+  overflow-x: hidden;
+}
