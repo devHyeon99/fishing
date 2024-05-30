@@ -1,5 +1,5 @@
 const isOpenCollection = () => {
-  console.log('도감 오픈');
+  alert('미구현');
 };
 
 export default isOpenCollection;

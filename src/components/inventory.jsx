@@ -30,7 +30,7 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
   );
 };
 
-// 아이템 코드를 기반으로 아이템 정보 가져오기
+// 아이템 코드를 기반으로 아이템 정보 가져오기.
 const getItemInfo = (itemCode) => {
   let itemInfo = null;
   Object.values(itemsData).forEach((itemCategory) => {

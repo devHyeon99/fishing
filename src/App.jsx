@@ -4,7 +4,7 @@ import Button from './components/Button';
 import { fishing, isOpenCollection } from './utils';
 import './App.css';
 
-const IsOpenInventory = lazy(() => import('./components/inventory'));
+const IsOpenInventory = lazy(() => import('./components/Inventory'));
 
 function App() {
   const [history, setHistory] = useState('아이템 획득 히스토리 부분');
