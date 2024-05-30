@@ -15,9 +15,6 @@ module.exports = {
     'react/jsx-no-target-blank': 'off',
     'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     'no-unused-vars': ['warn', { vars: 'all', args: 'after-used' }],
-    'react/prop-types': [
-      'enabled',
-      { ignore: 'ignore', customValidators: 'customValidator>', skipUndeclared: 'skipUndeclared' },
-    ],
+    'react/prop-types': 1,
   },
 };
