@@ -19,7 +19,7 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div>
-        <h1 className="border-b-[1px] border-gray-400 py-3 text-center font-bold">인벤토리</h1>
+        <h1 className="border-b-[1px] border-gray-400 pb-4 text-center font-bold">인벤토리</h1>
         <div className="mt-3 flex flex-row flex-nowrap text-center">
           <span className="flex-1">아이템</span>
           <span className="flex-1">수량</span>
