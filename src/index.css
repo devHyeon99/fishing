@@ -14,3 +14,21 @@ body {
   font-family: 'SUIT Variable', sans-serif;
   overflow-x: hidden;
 }
+
+@keyframes marquee {
+  0% {
+    transform: translateX(120%);
+  }
+  100% {
+    transform: translateX(-120%);
+  }
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-text {
+  animation: marquee 12s linear infinite;
+}

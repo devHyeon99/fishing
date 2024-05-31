@@ -11,20 +11,22 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
     return (
       <li className="flex flex-row flex-nowrap text-center" key={itemCode}>
         <span className="flex-1">{itemInfo.name}</span>
-        <span className="flex-1">{quantity}</span>
+        <span className="flex-1 border-l-[1px] border-slate-400">{quantity}</span>
       </li>
     );
   });
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div>
-        <h1 className="border-b-[1px] border-gray-400 pb-4 text-center font-bold">인벤토리</h1>
-        <div className="mt-3 flex flex-row flex-nowrap text-center">
-          <span className="flex-1">아이템</span>
-          <span className="flex-1">수량</span>
+      <div className="text-blue-500">
+        <h1 className="rounded-t-md bg-blue-400 py-4 text-center text-lg font-bold text-white">
+          인벤토리
+        </h1>
+        <div className="flex flex-row flex-nowrap border-b-[1px] border-b-slate-400 py-3 text-center">
+          <span className="flex-1 font-semibold">아이템</span>
+          <span className="flex-1 font-semibold">수량</span>
         </div>
-        <ol className="mt-3 flex flex-col flex-nowrap gap-3">{inventoryItems}</ol>
+        <ol className="my-3 flex flex-col flex-nowrap gap-3">{inventoryItems}</ol>
       </div>
     </Modal>
   );

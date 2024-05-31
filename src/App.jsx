@@ -8,7 +8,7 @@ function App() {
   const IsOpenInventory = lazy(() => import('./components/Inventory'));
   const IsOpenCollection = lazy(() => import('./components/Collection'));
 
-  const [history, setHistory] = useState('아이템 획득 히스토리 부분');
+  const [history, setHistory] = useState('아래 낚시하기 버튼을 통해 낚시를 시작 해보세요!');
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isCollectionOpen, setIsCollectionOpen] = useState(false);
 
@@ -28,7 +28,12 @@ function App() {
       </h1>
       <section className="flex flex-col flex-nowrap gap-5">
         <div className="mx-auto flex h-[500px] w-[350px] flex-col rounded-lg shadow-base sm:h-[500px] sm:w-[400px] md:h-[600px] md:w-[450px]">
-          <div className="flex-grow-[4] rounded-t-md bg-blue-100"></div>
+          <div className="text-semibold marquee-container flex h-10 flex-row flex-nowrap items-center justify-center rounded-t-md bg-blue-100 text-blue-500">
+            <span className="marquee-text">
+              <strong>김건호</strong>님이 처음으로 운석을 획득 하셨습니다. 축하 드립니다 🎉
+            </span>
+          </div>
+          <div className="flex-grow-[4] bg-blue-100"></div>
           <div className="flex-grow-[1] content-center rounded-b-md bg-white text-center font-medium text-blue-500">
             {history}
           </div>
@@ -49,6 +54,7 @@ function App() {
           </Suspense>
         </div>
       </section>
+      );
     </>
   );
 }
