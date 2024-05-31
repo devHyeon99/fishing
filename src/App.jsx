@@ -1,7 +1,15 @@
 // App.jsx
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, Suspense, lazy, useRef } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
+import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
 import { Button } from './components';
 import { fishing } from './utils';
+import catImg from './assets/cat.png';
+import textImg from './assets/text.png';
+import bgBgm from './assets/bg-music.mp3';
+import fishingBgm from './assets/fishing-bgm.mp3';
+
 import './App.css';
 
 function App() {
@@ -9,6 +17,9 @@ function App() {
   const IsOpenCollection = lazy(() => import('./components/Collection'));
 
   const [history, setHistory] = useState('아래 낚시하기 버튼을 통해 낚시를 시작 해보세요!');
+  const [isFishing, setIsFishing] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isCollectionOpen, setIsCollectionOpen] = useState(false);
 
@@ -17,8 +28,36 @@ function App() {
   const handleCollectionOpen = () => setIsCollectionOpen(true);
   const handleCollectionClose = () => setIsCollectionOpen(false);
 
+  const audio = new Audio(fishingBgm);
+
+  const togglePlay = () => {
+    audio.play();
+  };
+
+  const audioRef = useRef(new Audio(bgBgm));
+
+  const isPlay = () => {
+    const bgAudio = audioRef.current;
+
+    if (bgAudio.paused) {
+      bgAudio.play();
+    } else {
+      bgAudio.pause();
+    }
+
+    setIsPlaying(!isPlaying);
+  };
+
   const handleFishing = () => {
-    fishing(setHistory);
+    if (isFishing) return;
+
+    setIsFishing(true);
+    setHistory('낚시중...');
+    setTimeout(() => {
+      fishing(setHistory);
+      togglePlay();
+      setIsFishing(false);
+    }, 1000); // 1초 대기 후 낚시 결과 표시
   };
 
   return (
@@ -33,8 +72,25 @@ function App() {
               <strong>김건호</strong>님이 처음으로 운석을 획득 하셨습니다. 축하 드립니다 🎉
             </span>
           </div>
-          <div className="flex-grow-[4] bg-blue-100"></div>
-          <div className="flex-grow-[1] content-center rounded-b-md bg-white text-center font-medium text-blue-500">
+          <div className="relative flex flex-grow-[4] items-center justify-center bg-blue-100">
+            <img
+              className="absolute left-20 top-14 h-20 w-20 animate-bounce md:left-[120px] md:top-[96px] lg:left-32 lg:top-24"
+              src={textImg}
+              alt=""
+            />
+            <span className="absolute left-[94px] top-[84px] animate-bounce text-sm font-bold md:left-[134px] md:top-[124px] lg:left-[143px] lg:top-[123px]">
+              낚시중...
+            </span>
+            <img className="h-36 w-36 animate-bounce" src={catImg} alt="" />
+            <FontAwesomeIcon
+              className="absolute bottom-3 right-3 text-blue-500 hover:cursor-pointer"
+              icon={isPlaying ? faVolumeHigh : faVolumeXmark}
+              onClick={isPlay}
+            />
+          </div>
+          <div
+            className={`max-h-[100px] flex-grow-[1] content-center rounded-b-md bg-white text-center font-medium text-blue-500 ${isFishing && 'font-extrabold'}`}
+          >
             {history}
           </div>
         </div>
@@ -54,7 +110,6 @@ function App() {
           </Suspense>
         </div>
       </section>
-      );
     </>
   );
 }

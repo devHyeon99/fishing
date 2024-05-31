@@ -30,7 +30,7 @@ const fishing = (setHistory) => {
   inventory[itemCode] = (inventory[itemCode] || 0) + 1;
   localStorage.setItem('inventory', JSON.stringify(inventory));
 
-  setHistory(`아이템 ${selectedItem.name}을(를) 획득하셨습니다.`);
+  setHistory(`${selectedItem.name}을(를) 획득하셨습니다.`);
 };
 
 export default fishing;
