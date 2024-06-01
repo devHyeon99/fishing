@@ -1,5 +1,5 @@
 // App.jsx
-import React, { useState, Suspense, lazy, useRef } from 'react';
+import React, { useState, Suspense, lazy, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
 import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
