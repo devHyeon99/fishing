@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
 import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
 import { Button } from './components';
-import { fishing } from './utils';
+import { fishing, fetchNotice } from './utils';
 import catImg from './assets/cat.png';
 import textImg from './assets/text.png';
 import bgBgm from './assets/bg-music.mp3';
@@ -16,6 +16,7 @@ function App() {
   const IsOpenInventory = lazy(() => import('./components/Inventory'));
   const IsOpenCollection = lazy(() => import('./components/Collection'));
 
+  const [notice, setNotice] = useState('');
   const [history, setHistory] = useState('아래 낚시하기 버튼을 통해 낚시를 시작 해보세요!');
   const [isFishing, setIsFishing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -27,6 +28,19 @@ function App() {
   const handleInventoryClose = () => setIsInventoryOpen(false);
   const handleCollectionOpen = () => setIsCollectionOpen(true);
   const handleCollectionClose = () => setIsCollectionOpen(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const notice = await fetchNotice();
+        setNotice(notice);
+      } catch (error) {
+        console.error('Error fetching items data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const audio = new Audio(fishingBgm);
 
@@ -68,9 +82,7 @@ function App() {
       <section className="flex flex-col flex-nowrap gap-5">
         <div className="mx-auto flex h-[500px] w-[350px] flex-col rounded-lg shadow-base sm:h-[500px] sm:w-[400px] md:h-[600px] md:w-[450px]">
           <div className="text-semibold marquee-container flex h-10 flex-row flex-nowrap items-center justify-center rounded-t-md bg-blue-100 text-blue-500">
-            <span className="marquee-text">
-              <strong>김건호</strong>님이 처음으로 운석을 획득 하셨습니다. 축하 드립니다 🎉
-            </span>
+            <span className="marquee-text">{notice}</span>
           </div>
           <div className="relative flex flex-grow-[4] items-center justify-center bg-blue-100">
             <img
