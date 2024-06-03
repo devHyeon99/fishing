@@ -1,10 +1,28 @@
 // IsOpenInventory.jsx
 import fetchItems from '/src/utils/fetchItems';
-import Modal from './Modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCircleInfo,
+  faTrash,
+  faCircleChevronLeft,
+  faCircleChevronRight,
+} from '@fortawesome/free-solid-svg-icons';
+import { Modal, ConfirmModal, AlertModal } from './index.js';
+import useModal from '../hooks/useModal';
 import { useEffect, useState } from 'react';
 
 const IsOpenInventory = ({ isOpen, onClose }) => {
   const [inventoryItems, setInventoryItems] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const alertModal = useModal();
+  const confirmModal = useModal();
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = inventoryItems.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(inventoryItems.length / itemsPerPage);
 
   useEffect(() => {
     const inventory = JSON.parse(localStorage.getItem('inventory')) || {};
@@ -22,26 +40,83 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
     fetchInventoryItems();
   }, []);
 
+  const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  const showConfirm = () => {
+    confirmModal.openModal();
+  };
+
+  const handleConfirm = () => {
+    console.log('Confirmed!');
+    confirmModal.closeModal();
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="text-blue-500">
-        <h1 className="rounded-t-md bg-blue-400 py-4 text-center text-lg font-bold text-white">
-          인벤토리
-        </h1>
-        <div className="flex flex-row flex-nowrap border-b-[1px] border-b-slate-400 py-3 text-center">
-          <span className="flex-1 font-semibold">아이템</span>
-          <span className="flex-1 font-semibold">수량</span>
+    <>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <div className="relative min-h-[500px] text-blue-500">
+          <h1 className="rounded-t-md bg-blue-400 py-4 text-center text-lg font-bold text-white">
+            인벤토리
+          </h1>
+          <ol className="m-5 flex flex-col flex-nowrap gap-3">
+            {currentItems.map(({ itemCode, name, quantity }) => (
+              <li
+                className="flex flex-row flex-nowrap items-center rounded-md border border-slate-300 p-2 text-center shadow-md"
+                key={itemCode}
+              >
+                <span className="flex-1">{name}</span>
+                <span className="flex-1">{quantity}</span>
+                <button
+                  type="button"
+                  className="h-8 w-8 rounded-md border border-slate-300 shadow-md"
+                  onClick={showConfirm}
+                >
+                  <FontAwesomeIcon className="text-red-500" icon={faTrash} />
+                </button>
+                <button
+                  type="button"
+                  className="ml-2 h-8 w-8 rounded-md border border-slate-300 shadow-md"
+                  onClick={() => alertModal.openModal()}
+                >
+                  <FontAwesomeIcon className="text-blue-400" icon={faCircleInfo} />
+                </button>
+              </li>
+            ))}
+          </ol>
+          <footer className="absolute bottom-0 left-[164px] mb-5 flex flex-row flex-nowrap items-center justify-center gap-6">
+            <button type="button" onClick={() => paginate(currentPage - 1)}>
+              <FontAwesomeIcon
+                className={`text-2xl ${currentPage === 1 ? 'cursor-not-allowed text-gray-400' : 'text-blue-400'}`}
+                icon={faCircleChevronLeft}
+              />
+            </button>
+            <button type="button" onClick={() => paginate(currentPage + 1)}>
+              <FontAwesomeIcon
+                className={`text-2xl ${currentPage === totalPages ? 'cursor-not-allowed text-gray-400' : 'text-blue-400'}`}
+                icon={faCircleChevronRight}
+              />
+            </button>
+          </footer>
         </div>
-        <ol className="my-3 flex flex-col flex-nowrap gap-3">
-          {inventoryItems.map(({ itemCode, name, quantity }) => (
-            <li className="flex flex-row flex-nowrap text-center" key={itemCode}>
-              <span className="flex-1">{name}</span>
-              <span className="flex-1 border-l-[1px] border-slate-400">{quantity}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </Modal>
+      </Modal>
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={confirmModal.closeModal}
+        onConfirm={handleConfirm}
+      >
+        <span className="block pt-5 text-center">해당 아이템을 삭제하시겠습니까?</span>
+      </ConfirmModal>
+      <AlertModal isOpen={alertModal.isOpen} onClose={alertModal.closeModal}>
+        <h2 className="rounded-t-md bg-blue-400 p-4 text-center font-semibold text-white">
+          아이템 정보
+        </h2>
+        <span className="block py-5 text-center">아이템 설명이 표시되는 공간입니다.</span>
+      </AlertModal>
+    </>
   );
 };
 

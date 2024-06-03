@@ -2,11 +2,22 @@ import { useEffect, useState } from 'react';
 import Modal from './Modal';
 import setCollection from '../utils/setCollection';
 import { fetchItems } from '../utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleChevronLeft, faCircleChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 const IsOpenCollection = ({ isOpen, onClose }) => {
   const [inventory, setInventory] = useState({});
   const [itemsData, setItemsData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 6;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const totalPages = Math.ceil(itemsData.length / itemsPerPage);
+  const currentItems = itemsData.slice(indexOfFirstItem, indexOfLastItem);
+
   const storedInventory = JSON.parse(localStorage.getItem('inventory')) || {};
+  const storedCollection = JSON.parse(localStorage.getItem('collection')) || {};
 
   useEffect(() => {
     setInventory(storedInventory);
@@ -27,24 +38,54 @@ const IsOpenCollection = ({ isOpen, onClose }) => {
     }
   };
 
-  const renderButton = (item) => (
-    <button
-      key={item.code}
-      className="h-20 w-20 rounded-md border border-solid border-slate-100 bg-blue-50 shadow-md hover:scale-105 active:scale-105"
-      onClick={() => handleSetCollection(item.name, item.code)}
-    >
-      {item.name}
-    </button>
-  );
+  const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  const renderButton = (item) => {
+    const isRegistered = Object.prototype.hasOwnProperty.call(storedCollection, item.name);
+    return (
+      <li
+        className="flex flex-row flex-nowrap items-center rounded-md border border-slate-300 p-2 text-center shadow-md"
+        key={item.code}
+      >
+        <span className="flex-1 text-blue-400">{item.name}</span>
+        <span className={`flex-1 font-semibold ${isRegistered ? 'text-red-400' : 'text-gray-300'}`}>
+          {isRegistered ? '등록됨' : '미등록'}
+        </span>
+        <button
+          className={`h-8 w-[74px] rounded-md border border-solid border-slate-100 font-semibold text-blue-400 shadow-md ${isRegistered && 'cursor-not-allowed text-gray-300'}`}
+          onClick={() => handleSetCollection(item.name, item.code)}
+          disabled={isRegistered}
+        >
+          등록
+        </button>
+      </li>
+    );
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h1 className="rounded-t-md bg-blue-400 py-4 text-center text-lg font-bold text-white">
         도감등록
       </h1>
-      <div className="grid grid-flow-row grid-cols-3 justify-evenly gap-x-10 gap-y-5 p-5">
-        {itemsData.map(renderButton)}
-      </div>
+      <ol className="m-5 flex flex-col flex-nowrap gap-3">{currentItems.map(renderButton)}</ol>
+      <footer className="absolute bottom-0 left-[164px] mb-5 flex flex-row flex-nowrap items-center justify-center gap-6">
+        <button type="button" onClick={() => paginate(currentPage - 1)}>
+          <FontAwesomeIcon
+            className={`text-2xl ${currentPage === 1 ? 'cursor-not-allowed text-gray-400' : 'text-blue-400'}`}
+            icon={faCircleChevronLeft}
+          />
+        </button>
+        <button type="button" onClick={() => paginate(currentPage + 1)}>
+          <FontAwesomeIcon
+            className={`text-2xl ${currentPage === totalPages ? 'cursor-not-allowed text-gray-400' : 'text-blue-400'}`}
+            icon={faCircleChevronRight}
+          />
+        </button>
+      </footer>
     </Modal>
   );
 };

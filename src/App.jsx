@@ -1,10 +1,9 @@
-// App.jsx
 import React, { useState, Suspense, lazy, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
-import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
+import { faVolumeXmark, faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
 import { Button } from './components';
 import { fishing, fetchNotice } from './utils';
+import useModal from './hooks/useModal';
 import catImg from './assets/cat.png';
 import textImg from './assets/text.png';
 import bgBgm from './assets/bg-music.mp3';
@@ -12,22 +11,20 @@ import fishingBgm from './assets/fishing-bgm.mp3';
 
 import './App.css';
 
-function App() {
-  const IsOpenInventory = lazy(() => import('./components/Inventory'));
-  const IsOpenCollection = lazy(() => import('./components/Collection'));
+const IsOpenInventory = lazy(() => import('./components/Inventory'));
+const IsOpenCollection = lazy(() => import('./components/Collection'));
 
-  const [notice, setNotice] = useState('');
+function App() {
+  const [notice, setNotice] = useState('실시간 공지사항입니다.');
   const [history, setHistory] = useState('아래 낚시하기 버튼을 통해 낚시를 시작 해보세요!');
   const [isFishing, setIsFishing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
-  const [isCollectionOpen, setIsCollectionOpen] = useState(false);
+  const inventoryModal = useModal();
+  const collectionModal = useModal();
 
-  const handleInventoryOpen = () => setIsInventoryOpen(true);
-  const handleInventoryClose = () => setIsInventoryOpen(false);
-  const handleCollectionOpen = () => setIsCollectionOpen(true);
-  const handleCollectionClose = () => setIsCollectionOpen(false);
+  const audio = new Audio(fishingBgm);
+  const audioRef = useRef(new Audio(bgBgm));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,13 +39,9 @@ function App() {
     fetchData();
   }, []);
 
-  const audio = new Audio(fishingBgm);
-
   const togglePlay = () => {
     audio.play();
   };
-
-  const audioRef = useRef(new Audio(bgBgm));
 
   const isPlay = () => {
     const bgAudio = audioRef.current;
@@ -108,16 +101,19 @@ function App() {
         </div>
         <div className="flex flex-row flex-nowrap justify-center gap-5">
           <Button text="낚시하기" onClick={handleFishing} />
-          <Button text="인벤토리" onClick={handleInventoryOpen} />
-          <Suspense>
-            {isInventoryOpen && (
-              <IsOpenInventory isOpen={isInventoryOpen} onClose={handleInventoryClose} />
+          <Button text="인벤토리" onClick={inventoryModal.openModal} />
+          <Suspense fallback={<div>Loading...</div>}>
+            {inventoryModal.isOpen && (
+              <IsOpenInventory isOpen={inventoryModal.isOpen} onClose={inventoryModal.closeModal} />
             )}
           </Suspense>
-          <Button text="도감등록" onClick={handleCollectionOpen} />
-          <Suspense>
-            {isCollectionOpen && (
-              <IsOpenCollection isOpen={isCollectionOpen} onClose={handleCollectionClose} />
+          <Button text="도감등록" onClick={collectionModal.openModal} />
+          <Suspense fallback={<div>Loading...</div>}>
+            {collectionModal.isOpen && (
+              <IsOpenCollection
+                isOpen={collectionModal.isOpen}
+                onClose={collectionModal.closeModal}
+              />
             )}
           </Suspense>
         </div>

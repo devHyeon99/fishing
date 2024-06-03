@@ -17,10 +17,10 @@ body {
 
 @keyframes marquee {
   0% {
-    transform: translateX(120%);
+    transform: translateX(100%);
   }
   100% {
-    transform: translateX(-120%);
+    transform: translateX(-100%);
   }
 }
 
@@ -30,7 +30,7 @@ body {
 }
 
 .marquee-text {
-  animation: marquee 12s linear infinite;
+  animation: marquee 10s linear infinite;
 }
 
 @keyframes bounce {
