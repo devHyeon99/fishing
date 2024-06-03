@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 
 const IsOpenInventory = ({ isOpen, onClose }) => {
   const [inventoryItems, setInventoryItems] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
@@ -30,8 +31,8 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
     const fetchInventoryItems = async () => {
       const items = await Promise.all(
         Object.entries(inventory).map(async ([itemCode, quantity]) => {
-          const name = await getItemInfo(itemCode);
-          return { itemCode, name, quantity };
+          const { name, des } = await getItemInfo(itemCode);
+          return { itemCode, name, des, quantity };
         })
       );
       setInventoryItems(items);
@@ -63,7 +64,7 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
             인벤토리
           </h1>
           <ol className="m-5 flex flex-col flex-nowrap gap-3">
-            {currentItems.map(({ itemCode, name, quantity }) => (
+            {currentItems.map(({ itemCode, name, quantity, des }) => (
               <li
                 className="flex flex-row flex-nowrap items-center rounded-md border border-slate-300 p-2 text-center shadow-md"
                 key={itemCode}
@@ -80,7 +81,10 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
                 <button
                   type="button"
                   className="ml-2 h-8 w-8 rounded-md border border-slate-300 shadow-md"
-                  onClick={() => alertModal.openModal()}
+                  onClick={() => {
+                    setSelectedItem({ name, des });
+                    alertModal.openModal();
+                  }}
                 >
                   <FontAwesomeIcon className="text-blue-400" icon={faCircleInfo} />
                 </button>
@@ -114,7 +118,12 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
         <h2 className="rounded-t-md bg-blue-400 p-4 text-center font-semibold text-white">
           아이템 정보
         </h2>
-        <span className="block py-5 text-center">아이템 설명이 표시되는 공간입니다.</span>
+        <span className="block pt-5 text-center font-semibold">
+          {selectedItem ? selectedItem.name : '아이템 이름이 표시되는 공간입니다.'}
+        </span>
+        <span className="block py-5 text-center text-blue-500">
+          {selectedItem ? selectedItem.des : '아이템 설명이 표시되는 공간입니다.'}
+        </span>
       </AlertModal>
     </>
   );
@@ -139,7 +148,8 @@ const getItemInfo = async (itemCode) => {
     // allItems에서 itemCode에 맞는 아이템을 찾습니다.
     itemInfo = allItems.find((item) => item.code === itemCode);
     if (itemInfo) {
-      return itemInfo.name;
+      // 아이템 이름과 des 객체를 반환합니다.
+      return { name: itemInfo.name, des: itemInfo.des };
     } else {
       throw new Error('Item not found');
     }

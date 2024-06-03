@@ -39,6 +39,14 @@ function App() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const inventory = JSON.parse(localStorage.getItem('inventory')) || {};
+
+    if (inventory['U01'] || inventory['R01']) {
+      localStorage.setItem('inventory', JSON.stringify({}));
+    }
+  }, []);
+
   const togglePlay = () => {
     audio.play();
   };
@@ -102,13 +110,13 @@ function App() {
         <div className="flex flex-row flex-nowrap justify-center gap-5">
           <Button text="낚시하기" onClick={handleFishing} />
           <Button text="인벤토리" onClick={inventoryModal.openModal} />
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense>
             {inventoryModal.isOpen && (
               <IsOpenInventory isOpen={inventoryModal.isOpen} onClose={inventoryModal.closeModal} />
             )}
           </Suspense>
           <Button text="도감등록" onClick={collectionModal.openModal} />
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense>
             {collectionModal.isOpen && (
               <IsOpenCollection
                 isOpen={collectionModal.isOpen}
