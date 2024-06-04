@@ -2,7 +2,7 @@ import React, { useState, Suspense, lazy, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeXmark, faVolumeHigh, faStore, faCoins } from '@fortawesome/free-solid-svg-icons';
 import { Button, ExperienceBar } from './components';
-import { fishing, fetchNotice, fetchItems, fetchShop } from './utils';
+import { fishing, fetchNotice, fetchItems, fetchShop, updateNotice } from './utils';
 import useModal from './hooks/useModal';
 import catImg from './assets/cat.png';
 import textImg from './assets/text.png';
@@ -24,6 +24,8 @@ function App() {
   const [isFishing, setIsFishing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const noticeRef = useRef(null);
+
   const inventoryModal = useModal();
   const collectionModal = useModal();
   const shopModal = useModal();
@@ -41,6 +43,7 @@ function App() {
       }
     };
 
+    // updateNotice();
     fetchShop();
     fetchItems();
     fetchData();
@@ -53,6 +56,15 @@ function App() {
       localStorage.setItem('inventory', JSON.stringify({}));
     }
   }, []);
+
+  useEffect(() => {
+    if (noticeRef.current) {
+      noticeRef.current.style.animation = 'none';
+      setTimeout(() => {
+        noticeRef.current.style.animation = '';
+      }, 10);
+    }
+  }, [notice]);
 
   const togglePlay = () => {
     audio.play();
@@ -91,7 +103,9 @@ function App() {
       <section className="flex flex-col flex-nowrap gap-5">
         <div className="mx-auto flex h-[500px] w-[350px] flex-col rounded-lg shadow-base md:h-[600px] md:w-[450px]">
           <div className="text-semibold marquee-container flex h-10 flex-row flex-nowrap items-center justify-center rounded-t-md bg-blue-100 text-blue-500">
-            <span className="marquee-text">{notice}</span>
+            <span className="marquee-text" ref={noticeRef}>
+              {notice}
+            </span>
           </div>
           <div className="relative flex flex-grow-[4] items-center justify-center bg-blue-100">
             <img
