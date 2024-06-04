@@ -15,6 +15,17 @@ body {
   overflow-x: hidden;
 }
 
+/* input:number arrow remove styling */
+@layer base {
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number'] {
+    -webkit-appearance: none;
+    margin: 0;
+    -moz-appearance: textfield !important;
+  }
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(100%);

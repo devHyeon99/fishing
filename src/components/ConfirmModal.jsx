@@ -14,7 +14,7 @@ const ConfirmModal = ({ isOpen, children, onClose, onConfirm }) => {
       onClick={onClose}
     >
       <div
-        className="relative min-h-[100px] min-w-[400px] rounded-md bg-white shadow-lg"
+        className="relative flex min-h-[100px] min-w-[400px] flex-col rounded-md bg-white shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
         <button type="button" className="absolute right-2 top-2 z-10" onClick={onClose}>
@@ -25,14 +25,14 @@ const ConfirmModal = ({ isOpen, children, onClose, onConfirm }) => {
         <div className="py-4 text-center">
           <button
             type="button"
-            className="mr-2 rounded bg-red-400 px-4 py-2 font-semibold text-white hover:bg-red-500"
+            className="mr-2 rounded border border-slate-300 px-4 py-1 text-sm font-semibold text-red-500 shadow-md hover:bg-red-500 hover:text-white"
             onClick={onConfirm}
           >
             예
           </button>
           <button
             type="button"
-            className="rounded bg-blue-400 px-4 py-2 font-semibold text-white hover:bg-blue-500"
+            className="rounded border border-slate-300 px-4 py-1 text-sm font-semibold text-blue-400 shadow-md hover:bg-blue-500 hover:text-white"
             onClick={onClose}
           >
             아니오

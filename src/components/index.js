@@ -4,3 +4,5 @@ export { default as Button } from './Button';
 export { default as Modal } from './Modal';
 export { default as ConfirmModal } from './ConfirmModal';
 export { default as AlertModal } from './AlertModal';
+export { default as ExperienceBar } from './ExperienceBar';
+export { default as Shop } from './Shop';

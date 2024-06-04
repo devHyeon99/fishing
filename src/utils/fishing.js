@@ -1,6 +1,6 @@
 import fetchItems from './fetchItems';
 
-const fishing = async (setHistory) => {
+const fishing = async (setHistory, currentExp, setCurrentExp) => {
   try {
     const items = await fetchItems();
     if (!items) {
@@ -13,21 +13,27 @@ const fishing = async (setHistory) => {
     switch (true) {
       case rand < 0.1:
         selectedItem = items.chaos[Math.floor(Math.random() * items.chaos.length)];
+        setCurrentExp(currentExp + 100);
         break;
       case rand < 1:
         selectedItem = items.legend[Math.floor(Math.random() * items.legend.length)];
+        setCurrentExp(currentExp + 50);
         break;
-      case rand < 5:
+      case rand < 6:
         selectedItem = items.unique[Math.floor(Math.random() * items.unique.length)];
+        setCurrentExp(currentExp + 10);
         break;
-      case rand < 10:
+      case rand < 16:
         selectedItem = items.rare[Math.floor(Math.random() * items.rare.length)];
+        setCurrentExp(currentExp + 5);
         break;
       case rand < 50:
         selectedItem = items.normal[Math.floor(Math.random() * items.normal.length)];
+        setCurrentExp(currentExp + 3);
         break;
       default:
         selectedItem = items.etc[Math.floor(Math.random() * items.etc.length)];
+        setCurrentExp(currentExp + 1);
         break;
     }
 

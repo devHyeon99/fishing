@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
-import Modal from './Modal';
+import { Modal, AlertModal } from './index';
 import setCollection from '../utils/setCollection';
 import { fetchItems } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleChevronLeft, faCircleChevronRight } from '@fortawesome/free-solid-svg-icons';
+import useModal from '../hooks/useModal';
 
 const IsOpenCollection = ({ isOpen, onClose }) => {
   const [inventory, setInventory] = useState({});
   const [itemsData, setItemsData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [contentModal, setContentModal] = useState('');
 
   const itemsPerPage = 6;
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -19,13 +21,17 @@ const IsOpenCollection = ({ isOpen, onClose }) => {
   const storedInventory = JSON.parse(localStorage.getItem('inventory')) || {};
   const storedCollection = JSON.parse(localStorage.getItem('collection')) || {};
 
+  const basicAlertModal = useModal();
+
   useEffect(() => {
     setInventory(storedInventory);
     fetchData();
   }, []);
 
   const handleSetCollection = (name, code) => {
-    setInventory((prevInventory) => setCollection(prevInventory, name, code));
+    setInventory((prevInventory) =>
+      setCollection(prevInventory, name, code, setContentModal, basicAlertModal)
+    );
   };
 
   const fetchData = async () => {
@@ -56,7 +62,7 @@ const IsOpenCollection = ({ isOpen, onClose }) => {
           {isRegistered ? '등록됨' : '미등록'}
         </span>
         <button
-          className={`h-8 w-[74px] rounded-md border border-solid border-slate-100 font-semibold text-blue-400 shadow-md ${isRegistered && 'cursor-not-allowed text-gray-300'}`}
+          className={`h-8 w-[74px] rounded-md border border-slate-300 font-semibold text-blue-400 shadow-md  ${isRegistered ? 'cursor-not-allowed text-gray-300' : 'hover:bg-blue-400 hover:text-white'}`}
           onClick={() => handleSetCollection(item.name, item.code)}
           disabled={isRegistered}
         >
@@ -67,26 +73,33 @@ const IsOpenCollection = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="rounded-t-md bg-blue-400 py-4 text-center text-lg font-bold text-white">
-        도감등록
-      </h1>
-      <ol className="m-5 flex flex-col flex-nowrap gap-3">{currentItems.map(renderButton)}</ol>
-      <footer className="absolute bottom-0 left-[164px] mb-5 flex flex-row flex-nowrap items-center justify-center gap-6">
-        <button type="button" onClick={() => paginate(currentPage - 1)}>
-          <FontAwesomeIcon
-            className={`text-2xl ${currentPage === 1 ? 'cursor-not-allowed text-gray-400' : 'text-blue-400'}`}
-            icon={faCircleChevronLeft}
-          />
-        </button>
-        <button type="button" onClick={() => paginate(currentPage + 1)}>
-          <FontAwesomeIcon
-            className={`text-2xl ${currentPage === totalPages ? 'cursor-not-allowed text-gray-400' : 'text-blue-400'}`}
-            icon={faCircleChevronRight}
-          />
-        </button>
-      </footer>
-    </Modal>
+    <>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <h1 className="rounded-t-md bg-blue-400 py-4 text-center text-lg font-bold text-white">
+          도감등록
+        </h1>
+        <ol className="m-5 flex flex-col flex-nowrap gap-3">{currentItems.map(renderButton)}</ol>
+        <footer className="absolute bottom-0 left-[164px] mb-5 flex flex-row flex-nowrap items-center justify-center gap-6">
+          <button type="button" onClick={() => paginate(currentPage - 1)}>
+            <FontAwesomeIcon
+              className={`text-2xl ${currentPage === 1 ? 'cursor-not-allowed text-gray-400' : 'text-blue-400'}`}
+              icon={faCircleChevronLeft}
+            />
+          </button>
+          <button type="button" onClick={() => paginate(currentPage + 1)}>
+            <FontAwesomeIcon
+              className={`text-2xl ${currentPage === totalPages ? 'cursor-not-allowed text-gray-400' : 'text-blue-400'}`}
+              icon={faCircleChevronRight}
+            />
+          </button>
+        </footer>
+      </Modal>
+      {/* 확인 Alert 모달 */}
+      <AlertModal isOpen={basicAlertModal.isOpen} onClose={basicAlertModal.closeModal}>
+        <h2 className="rounded-t-md bg-blue-400 p-4 text-center font-semibold text-white">알림</h2>
+        <span className="block py-4 text-center text-blue-500">{contentModal}</span>
+      </AlertModal>
+    </>
   );
 };
 

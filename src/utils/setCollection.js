@@ -1,4 +1,4 @@
-const setCollection = (inventory, name, code) => {
+const setCollection = (inventory, name, code, setContentModal, basicAlertModal) => {
   const updatedInventory = { ...inventory };
 
   if (updatedInventory[code] >= 10) {
@@ -10,9 +10,11 @@ const setCollection = (inventory, name, code) => {
     collection[name] = (collection[name] || 0) + 1;
     localStorage.setItem('collection', JSON.stringify(collection));
 
-    alert(`도감에 ${name}이(가) 등록되었습니다.`);
+    setContentModal('도감 등록이 완료되었습니다.');
+    basicAlertModal.openModal();
   } else {
-    alert('도감을 채우기에 아이템 갯수가 모자릅니다.');
+    setContentModal('도감을 채우기에 아이템 갯수가 모자릅니다.');
+    basicAlertModal.openModal();
   }
 
   return updatedInventory;

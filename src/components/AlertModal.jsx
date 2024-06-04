@@ -21,6 +21,15 @@ const AlertModal = ({ isOpen, children, onClose }) => {
           <FontAwesomeIcon className="h-6 w-6 text-white hover:text-slate-500" icon={faXmark} />
         </button>
         {children}
+        <div className="mb-4 flex justify-center">
+          <button
+            type="button"
+            className="rounded-md border border-slate-300 px-4 py-1 text-blue-500 shadow-md hover:bg-blue-500 hover:text-white"
+            onClick={onClose}
+          >
+            확인
+          </button>
+        </div>
       </div>
     </div>,
     document.getElementById('modal-root')

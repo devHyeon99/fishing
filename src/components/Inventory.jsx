@@ -30,10 +30,16 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
 
     const fetchInventoryItems = async () => {
       const items = await Promise.all(
-        Object.entries(inventory).map(async ([itemCode, quantity]) => {
-          const { name, des } = await getItemInfo(itemCode);
-          return { itemCode, name, des, quantity };
-        })
+        Object.entries(inventory)
+          .sort(([a], [b]) => {
+            // 첫 글자를 기준으로 정렬하고, 첫 글자가 같으면 두 번째 글자를 기준으로 정렬
+            const firstCharCompare = a[0].localeCompare(b[0]);
+            return firstCharCompare !== 0 ? firstCharCompare : a.slice(1) - b.slice(1);
+          })
+          .map(async ([itemCode, quantity]) => {
+            const { name, des } = await getItemInfo(itemCode);
+            return { itemCode, name, des, quantity };
+          })
       );
       setInventoryItems(items);
     };
@@ -52,7 +58,6 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
   };
 
   const handleConfirm = () => {
-    console.log('Confirmed!');
     confirmModal.closeModal();
   };
 
@@ -73,20 +78,20 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
                 <span className="flex-1">{quantity}</span>
                 <button
                   type="button"
-                  className="h-8 w-8 rounded-md border border-slate-300 shadow-md"
+                  className="h-8 w-8 rounded-md border border-slate-300 text-sm text-red-500 shadow-md hover:bg-red-500 hover:text-white"
                   onClick={showConfirm}
                 >
-                  <FontAwesomeIcon className="text-red-500" icon={faTrash} />
+                  <FontAwesomeIcon className="" icon={faTrash} />
                 </button>
                 <button
                   type="button"
-                  className="ml-2 h-8 w-8 rounded-md border border-slate-300 shadow-md"
+                  className="ml-2 h-8 w-8 rounded-md border border-slate-300 text-blue-400 shadow-md hover:bg-blue-400 hover:text-white"
                   onClick={() => {
                     setSelectedItem({ name, des });
                     alertModal.openModal();
                   }}
                 >
-                  <FontAwesomeIcon className="text-blue-400" icon={faCircleInfo} />
+                  <FontAwesomeIcon className="" icon={faCircleInfo} />
                 </button>
               </li>
             ))}
