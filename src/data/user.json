@@ -1,0 +1,28 @@
+{
+  "user": [
+    {
+      "idx": 1,
+      "id": "admin",
+      "pw": "admin",
+      "level": 100,
+      "exp": 0,
+      "coin": 10000
+    },
+    {
+      "idx": 2,
+      "id": "admin2",
+      "pw": "admin",
+      "level": 100,
+      "exp": 0,
+      "coin": 10000
+    },
+    {
+      "idx": 3,
+      "id": "admin3",
+      "pw": "admin",
+      "level": 100,
+      "exp": 0,
+      "coin": 10000
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "userIdx": 1,
+    "items": [
+      {
+        "code": "A01",
+        "name": "용암 장어",
+        "quantity": 2
+      },
+      {
+        "code": "B02",
+        "name": "철갑 상어",
+        "quantity": 1
+      },
+      {
+        "code": "C01",
+        "name": "메기",
+        "quantity": 5
+      }
+    ]
+  },
+  {
+    "userIdx": 2,
+    "items": [
+      {
+        "code": "A01",
+        "name": "용암 장어",
+        "quantity": 2
+      },
+      {
+        "code": "B02",
+        "name": "철갑 상어",
+        "quantity": 1
+      },
+      {
+        "code": "C01",
+        "name": "메기",
+        "quantity": 5
+      }
+    ]
+  }
+]

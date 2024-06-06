@@ -6,12 +6,13 @@ import {
   faTrash,
   faCircleChevronLeft,
   faCircleChevronRight,
+  faCoins,
 } from '@fortawesome/free-solid-svg-icons';
 import { Modal, ConfirmModal, AlertModal } from './index.js';
 import useModal from '../hooks/useModal';
 import { useEffect, useState } from 'react';
 
-const IsOpenInventory = ({ isOpen, onClose }) => {
+const IsOpenInventory = ({ isOpen, onClose, userInventory }) => {
   const [inventoryItems, setInventoryItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,6 +20,7 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
 
   const alertModal = useModal();
   const confirmModal = useModal();
+  const basicAlertModal = useModal();
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -26,26 +28,17 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
   const totalPages = Math.ceil(inventoryItems.length / itemsPerPage);
 
   useEffect(() => {
-    const inventory = JSON.parse(localStorage.getItem('inventory')) || {};
-
     const fetchInventoryItems = async () => {
       const items = await Promise.all(
-        Object.entries(inventory)
-          .sort(([a], [b]) => {
-            // 첫 글자를 기준으로 정렬하고, 첫 글자가 같으면 두 번째 글자를 기준으로 정렬
-            const firstCharCompare = a[0].localeCompare(b[0]);
-            return firstCharCompare !== 0 ? firstCharCompare : a.slice(1) - b.slice(1);
-          })
-          .map(async ([itemCode, quantity]) => {
-            const { name, des } = await getItemInfo(itemCode);
-            return { itemCode, name, des, quantity };
-          })
+        userInventory.map(async (item) => {
+          const itemInfo = await getItemInfo(item.code);
+          return { ...item, ...itemInfo };
+        })
       );
       setInventoryItems(items);
     };
-
     fetchInventoryItems();
-  }, []);
+  }, [userInventory]);
 
   const paginate = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -59,6 +52,7 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
 
   const handleConfirm = () => {
     confirmModal.closeModal();
+    basicAlertModal.openModal();
   };
 
   return (
@@ -69,10 +63,10 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
             인벤토리
           </h1>
           <ol className="m-5 flex flex-col flex-nowrap gap-3">
-            {currentItems.map(({ itemCode, name, quantity, des }) => (
+            {currentItems.map(({ code, name, quantity, des, price }) => (
               <li
                 className="flex flex-row flex-nowrap items-center rounded-md border border-slate-300 p-2 text-center shadow-md"
-                key={itemCode}
+                key={code}
               >
                 <span className="flex-1">{name}</span>
                 <span className="flex-1">{quantity}</span>
@@ -87,7 +81,7 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
                   type="button"
                   className="ml-2 h-8 w-8 rounded-md border border-slate-300 text-blue-400 shadow-md hover:bg-blue-400 hover:text-white"
                   onClick={() => {
-                    setSelectedItem({ name, des });
+                    setSelectedItem({ name, des, price });
                     alertModal.openModal();
                   }}
                 >
@@ -117,7 +111,7 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
         onClose={confirmModal.closeModal}
         onConfirm={handleConfirm}
       >
-        <span className="block pt-5 text-center">해당 아이템을 삭제하시겠습니까?</span>
+        <span className="block pt-5 text-center">해당 아이템을 버리시겠습니까?</span>
       </ConfirmModal>
       <AlertModal isOpen={alertModal.isOpen} onClose={alertModal.closeModal}>
         <h2 className="rounded-t-md bg-blue-400 p-4 text-center font-semibold text-white">
@@ -126,9 +120,18 @@ const IsOpenInventory = ({ isOpen, onClose }) => {
         <span className="block pt-5 text-center font-semibold">
           {selectedItem ? selectedItem.name : '아이템 이름이 표시되는 공간입니다.'}
         </span>
-        <span className="block py-5 text-center text-blue-500">
+        <span className="block pt-3 text-center text-blue-500">
+          <FontAwesomeIcon className="mr-2 text-yellow-400" icon={faCoins} />
+          {selectedItem ? selectedItem.price : '아이템 가격이 표시되는 공간입니다.'}
+        </span>
+        <span className="block pb-5 pt-3 text-center text-blue-500">
           {selectedItem ? selectedItem.des : '아이템 설명이 표시되는 공간입니다.'}
         </span>
+      </AlertModal>
+      {/* 확인 Alert 모달 */}
+      <AlertModal isOpen={basicAlertModal.isOpen} onClose={basicAlertModal.closeModal}>
+        <h2 className="rounded-t-md bg-blue-400 p-4 text-center font-semibold text-white">알림</h2>
+        <span className="block py-4 text-center text-blue-500">아이템을 버릴 수 없습니다.</span>
       </AlertModal>
     </>
   );
@@ -141,9 +144,8 @@ const getItemInfo = async (itemCode) => {
     // 서버에서 데이터 가져오기
     const itemsData = await fetchItems();
 
-    // 객체의 모든 값들을 하나의 배열로 만듭니다.
+    // 객체의 모든 값들을 하나의 배열로
     const allItems = Object.values(itemsData).reduce((acc, val) => {
-      // 배열이면 합치고, 아니면 그대로 반환 (예: _id 필드)
       if (Array.isArray(val)) {
         return acc.concat(val);
       }
@@ -154,7 +156,7 @@ const getItemInfo = async (itemCode) => {
     itemInfo = allItems.find((item) => item.code === itemCode);
     if (itemInfo) {
       // 아이템 이름과 des 객체를 반환합니다.
-      return { name: itemInfo.name, des: itemInfo.des };
+      return { name: itemInfo.name, des: itemInfo.des, price: itemInfo.price };
     } else {
       throw new Error('Item not found');
     }

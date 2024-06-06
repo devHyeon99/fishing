@@ -1,16 +1,16 @@
-// IsOpenInventory.jsx
-import { fetchShop, fetchItems } from '../utils';
+import { useEffect, useState, useRef } from 'react';
+import { fetchShop, fetchItems, setUserCoin, setUserInventory } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCircleInfo,
   faCircleChevronLeft,
   faCircleChevronRight,
+  faCoins,
 } from '@fortawesome/free-solid-svg-icons';
 import { Modal, AlertModal, ConfirmModal } from './index.js';
 import useModal from '../hooks/useModal';
-import { useEffect, useState, useRef } from 'react';
 
-const Shop = ({ isOpen, onClose }) => {
+const Shop = ({ isOpen, onClose, coin, setCoin, userInventory, setInventory }) => {
   const [activeTab, setActiveTab] = useState('buy');
   const [inventoryItems, setInventoryItems] = useState([]);
   const [shopItems, setShopItems] = useState([]);
@@ -36,6 +36,8 @@ const Shop = ({ isOpen, onClose }) => {
   const inventoryTotalPages = Math.ceil(inventoryItems.length / itemsPerPage);
   const shopTotalPages = Math.ceil(shopItems.length / itemsPerPage);
 
+  const userIdx = JSON.parse(localStorage.getItem('userIdx'));
+
   // input창 보일 시에 포커스 잡기 위함.
   useEffect(() => {
     if (inputRef.current) {
@@ -44,25 +46,6 @@ const Shop = ({ isOpen, onClose }) => {
   }, [inputQuantity]);
 
   useEffect(() => {
-    const inventory = JSON.parse(localStorage.getItem('inventory')) || {};
-
-    // 인벤토리 아이템 가져오는 함수
-    const fetchInventoryItems = async () => {
-      const items = await Promise.all(
-        Object.entries(inventory)
-          .sort(([a], [b]) => {
-            // 첫 글자를 기준으로 정렬하고, 첫 글자가 같으면 두 번째 글자를 기준으로 정렬
-            const firstCharCompare = a[0].localeCompare(b[0]);
-            return firstCharCompare !== 0 ? firstCharCompare : a.slice(1) - b.slice(1);
-          })
-          .map(async ([code, quantity]) => {
-            const { name, des } = await getItemInfo(code);
-            return { code, name, des, quantity };
-          })
-      );
-      setInventoryItems(items);
-    };
-
     // 상점 아이템 목록 가져오는 함수
     const fetchShopItems = async () => {
       const shopData = await fetchShop();
@@ -72,8 +55,20 @@ const Shop = ({ isOpen, onClose }) => {
     };
 
     fetchShopItems();
+  }, []);
+
+  useEffect(() => {
+    const fetchInventoryItems = async () => {
+      const items = await Promise.all(
+        userInventory.map(async (item) => {
+          const itemInfo = await getItemInfo(item.code);
+          return { ...item, ...itemInfo };
+        })
+      );
+      setInventoryItems(items);
+    };
     fetchInventoryItems();
-  }, [localStorage.getItem('inventory')]);
+  }, [userInventory]);
 
   // 페이지 관리 함수
   const paginate = (pageNumber) => {
@@ -91,29 +86,35 @@ const Shop = ({ isOpen, onClose }) => {
   };
 
   const handleSellConfirm = () => {
-    const inventory = JSON.parse(localStorage.getItem('inventory')) || {};
+    const itemInInventory = inventoryItems.find((item) => item.code === selectedItem.code);
 
-    const itemInInventory = inventory[selectedItem.code];
-
-    if (Math.sign(inputQuantity) === -1) {
+    if (inputQuantity <= 0) {
       sellModal.closeModal();
+      setcontentModal('0 이하의 값은 입력 할 수 없습니다.');
+      basicAlertModal.openModal();
       return;
     }
 
-    if (itemInInventory && itemInInventory > 0 && itemInInventory >= Math.abs(inputQuantity)) {
-      inventory[selectedItem.code] -= inputQuantity;
+    if (itemInInventory && itemInInventory.quantity >= inputQuantity) {
+      itemInInventory.quantity -= inputQuantity;
 
-      if (inventory[selectedItem.code] === 0) {
-        delete inventory[selectedItem.code];
-      }
+      const totalPrice = coin + selectedItem.price * inputQuantity;
+      setCoin(totalPrice);
+      setUserCoin(userIdx, totalPrice);
+
+      const updatedInventory = userInventory.map((item) =>
+        item.code === selectedItem.code ? itemInInventory : item
+      );
+      setInventory(updatedInventory);
+
+      setUserInventory(userIdx, itemInInventory, -inputQuantity);
 
       sellModal.closeModal();
       setcontentModal('아이템 판매를 완료 하였습니다.');
       basicAlertModal.openModal();
-      localStorage.setItem('inventory', JSON.stringify(inventory));
     } else {
       sellModal.closeModal();
-      setcontentModal('수량을 확인해주세요 아이템을 팔 수 없습니다.');
+      setcontentModal('보유량이 부족하거나 아이템을 판매 할 수 없습니다.');
       basicAlertModal.openModal();
     }
   };
@@ -165,7 +166,10 @@ const Shop = ({ isOpen, onClose }) => {
                     key={code}
                   >
                     <span className="flex-1">{name}</span>
-                    <span className="flex-1">{price}</span>
+                    <span className="flex-1">
+                      <FontAwesomeIcon className="mr-2 text-yellow-400" icon={faCoins} />
+                      {price}
+                    </span>
                     <button
                       type="button"
                       className="h-8 w-10 rounded-md border border-slate-300 text-sm text-red-500 shadow-md hover:bg-red-500 hover:text-white"
@@ -209,18 +213,21 @@ const Shop = ({ isOpen, onClose }) => {
           {activeTab === 'sell' && (
             <>
               <ol className="m-5 flex flex-col flex-nowrap gap-3">
-                {currentInventoryItems.map(({ code, name, quantity, des }) => (
+                {currentInventoryItems.map(({ code, name, quantity, des, price }) => (
                   <li
                     className="flex flex-row flex-nowrap items-center rounded-md border border-slate-300 p-2 text-center shadow-md"
                     key={code}
                   >
                     <span className="flex-1">{name}</span>
-                    <span className="flex-1">{quantity}</span>
+                    <span className="flex-1">
+                      <FontAwesomeIcon className="mr-2 text-yellow-400" icon={faCoins} />
+                      {price}
+                    </span>
                     <button
                       type="button"
                       className="h-8 w-10 rounded-md border border-slate-300 text-sm text-red-500 shadow-md hover:bg-red-500 hover:text-white"
                       onClick={() => {
-                        setSelectedItem({ name, code, quantity, des });
+                        setSelectedItem({ name, code, quantity, des, price });
                         sellConfirm(quantity);
                       }}
                     >
@@ -278,8 +285,11 @@ const Shop = ({ isOpen, onClose }) => {
         onClose={sellModal.closeModal}
         onConfirm={handleSellConfirm}
       >
-        <span className="block py-4 text-center font-semibold">
+        <span className="block py-2 pt-4 text-center font-semibold">
           {selectedItem ? selectedItem.name : '아이템 이름이 표시되는 공간입니다.'}
+        </span>
+        <span className="block pb-2 text-center font-light text-blue-500">
+          현재 보유 개수 : {selectedItem.quantity}
         </span>
         <input
           type="number"
@@ -289,7 +299,7 @@ const Shop = ({ isOpen, onClose }) => {
           onChange={(e) => setInputQuantity(e.target.value)}
           className="mt-5 h-6 w-12 self-center rounded-sm border border-slate-300 text-center outline-none"
         />
-        <span className="block pt-4 text-center text-blue-500">
+        <span className="block pt-2 text-center text-blue-500">
           해당 아이템을 판매하시겠습니까?
         </span>
       </ConfirmModal>
@@ -336,7 +346,7 @@ const getItemInfo = async (itemCode) => {
     itemInfo = allItems.find((item) => item.code === itemCode);
     if (itemInfo) {
       // 아이템 이름과 des 객체를 반환합니다.
-      return { name: itemInfo.name, des: itemInfo.des };
+      return { name: itemInfo.name, des: itemInfo.des, price: itemInfo.price };
     } else {
       throw new Error('Item not found');
     }

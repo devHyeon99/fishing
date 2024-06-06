@@ -8,6 +8,7 @@ body,
 .App {
   width: 100vw;
   min-height: 100vh;
+  max-height: 100vh;
 }
 
 body {
@@ -56,4 +57,11 @@ body {
 
 .animated {
   animation: bounce 10s ease-in-out infinite;
+}
+
+.circle {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
 }

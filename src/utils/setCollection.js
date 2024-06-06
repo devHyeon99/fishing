@@ -13,7 +13,7 @@ const setCollection = (inventory, name, code, setContentModal, basicAlertModal) 
     setContentModal('도감 등록이 완료되었습니다.');
     basicAlertModal.openModal();
   } else {
-    setContentModal('도감을 채우기에 아이템 갯수가 모자릅니다.');
+    setContentModal('현재 도감 시스템은 점검중입니다.');
     basicAlertModal.openModal();
   }
 
