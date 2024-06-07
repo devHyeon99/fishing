@@ -1,0 +1,17 @@
+{
+  "userIdx": 1,
+  "collections": [
+    {
+      "code": "A01",
+      "name": "용암 장어"
+    },
+    {
+      "code": "B02",
+      "name": "철갑 상어"
+    },
+    {
+      "code": "C01",
+      "name": "메기"
+    }
+  ]
+}

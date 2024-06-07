@@ -1,6 +1,6 @@
 let cachedItems = null;
 
-const fetchItems = async () => {
+const fetchShop = async () => {
   if (cachedItems) {
     return cachedItems;
   }
@@ -19,4 +19,4 @@ const fetchItems = async () => {
   }
 };
 
-export default fetchItems;
+export default fetchShop;

@@ -1,11 +1,11 @@
 let currentUser = null;
 
-const getUserInventory = async (userIdx) => {
+const getUserCollection = async (userIdx) => {
   if (currentUser) {
     return currentUser;
   }
   try {
-    const response = await fetch('/.netlify/functions/get-user-inventory', {
+    const response = await fetch('/.netlify/functions/get-user-collection', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -16,14 +16,14 @@ const getUserInventory = async (userIdx) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result = await response.json();
-    return result.items; // result를 반환
+    return result.collections; // result를 반환
   } catch (error) {
     console.error('Error fetching items:', error);
     return null;
   }
 };
 
-export default getUserInventory;
+export default getUserCollection;
 
 /* JavaScript의 단축 속성 이름 (Shortened Property Names) 문법 입니다. 이 문법은 ES6 (ECMAScript 2015)에서 도입되었습니다.
 

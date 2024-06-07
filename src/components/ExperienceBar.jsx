@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { setUserLevel, setUserExp } from '../utils';
 
 const ExperienceBar = ({ currentExp, setCurrentExp, level, setLevel }) => {
-  const [maxExp, setMaxExp] = useState(100);
+  const [maxExp, setMaxExp] = useState(level * 10 + 90);
   const userIdx = JSON.parse(localStorage.getItem('userIdx'));
 
   useEffect(() => {
@@ -28,18 +28,18 @@ const ExperienceBar = ({ currentExp, setCurrentExp, level, setLevel }) => {
 
   return (
     <>
-      <span className="absolute bottom-8 select-none text-sm font-light text-blue-500 ">
-        Lv.{level}
-      </span>
-      <div className="absolute bottom-3 h-4 w-48 rounded-md bg-white">
+      <label className="pointer-events-none absolute bottom-8 block select-none text-sm font-light text-blue-500">
+        Lv. {level}
+      </label>
+      <div className="pointer-events-none absolute bottom-3 h-4 w-48 select-none rounded-md bg-white">
         <div
-          className="absolute h-4 rounded-md bg-blue-300"
+          className="pointer-events-none absolute h-4 select-none rounded-md bg-blue-300"
           style={{ width: `${percentage}%` }}
         ></div>
       </div>
-      <span className="absolute bottom-3.5 h-4 select-none text-center text-sm font-light text-blue-500 ">
+      <label className="pointer-events-none absolute bottom-3.5 block h-4 select-none text-center text-sm font-light text-blue-500">
         {currentExp}/{maxExp}
-      </span>
+      </label>
     </>
   );
 };

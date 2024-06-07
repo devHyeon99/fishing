@@ -1,5 +1,5 @@
 export { default as fishing } from './fishing';
-export { default as setCollection } from './setCollection';
+export { default as setUserCollection } from './setUserCollection';
 export { default as fetchItems } from './fetchItems';
 export { default as fetchNotice } from './fetchNotice';
 export { default as fetchShop } from './fetchShop';
@@ -11,3 +11,4 @@ export { default as setUserInventory } from './setUserInventory';
 export { default as setUserExp } from './setUserExp';
 export { default as setUserLevel } from './setUserLevel';
 export { default as setUserCoin } from './setUserCoin';
+export { default as getUserCollection } from './getUserCollection';

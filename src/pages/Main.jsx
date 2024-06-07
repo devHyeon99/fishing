@@ -2,7 +2,15 @@ import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeXmark, faVolumeHigh, faStore, faCoins } from '@fortawesome/free-solid-svg-icons';
 import { Button, ExperienceBar } from '../components';
-import { fishing, fetchNotice, fetchItems, fetchShop, getUserInventory, getUser } from '../utils';
+import {
+  fishing,
+  fetchNotice,
+  fetchItems,
+  fetchShop,
+  getUserInventory,
+  getUser,
+  getUserCollection,
+} from '../utils';
 import useModal from '../hooks/useModal';
 import catImg from '../assets/cat.png';
 import textImg from '../assets/text.png';
@@ -21,6 +29,7 @@ function Main() {
   const [currentExp, setCurrentExp] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
   const [userInventory, setUserInventory] = useState([]);
+  const [userCollection, setUserCollection] = useState([]);
   const [isFishing, setIsFishing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -43,14 +52,16 @@ function Main() {
 
     const fetchData = async () => {
       try {
-        const [noticeData, inventoryData, userData] = await Promise.all([
+        const [noticeData, inventoryData, userData, collectionData] = await Promise.all([
           fetchNotice(),
           getUserInventory(userIdx),
           getUser(userIdx),
+          getUserCollection(userIdx),
         ]);
 
         setNotice(noticeData);
         setUserInventory(inventoryData);
+        setUserCollection(collectionData);
         setUserInfo(userData);
         setCurrentExp(userData.exp);
         setCoin(userData.coin);
@@ -137,7 +148,10 @@ function Main() {
               낚시중...
             </span>
             <img className="h-36 w-36 animate-bounce" src={catImg} alt="" />
-            <FontAwesomeIcon className="absolute bottom-3 left-3 text-yellow-400" icon={faCoins} />
+            <FontAwesomeIcon
+              className="absolute bottom-3 left-3 select-none text-yellow-400"
+              icon={faCoins}
+            />
             <span className="absolute bottom-[10px] left-8 select-none text-sm font-semibold text-blue-400 ">
               {coin}
             </span>
@@ -148,7 +162,7 @@ function Main() {
               setLevel={setLevel}
             ></ExperienceBar>
             <FontAwesomeIcon
-              className="absolute bottom-3 right-10 text-blue-500 hover:cursor-pointer"
+              className="absolute bottom-3 right-10 select-none text-blue-500 hover:cursor-pointer"
               onClick={shopModal.openModal}
               icon={faStore}
             />
@@ -165,7 +179,7 @@ function Main() {
               )}
             </Suspense>
             <FontAwesomeIcon
-              className="absolute bottom-3 right-3 text-blue-500 hover:cursor-pointer"
+              className="absolute bottom-3 right-3 select-none text-blue-500 hover:cursor-pointer"
               icon={isPlaying ? faVolumeHigh : faVolumeXmark}
               onClick={isPlay}
             />
@@ -194,6 +208,10 @@ function Main() {
               <IsOpenCollection
                 isOpen={collectionModal.isOpen}
                 onClose={collectionModal.closeModal}
+                userCollection={userCollection}
+                userInventory={userInventory}
+                setClientCol={setUserCollection}
+                setClientInven={setUserInventory}
               />
             )}
           </Suspense>

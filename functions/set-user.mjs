@@ -41,6 +41,14 @@ export async function handler(event, context) {
     };
     await inventoryCollection.insertOne(inventoryData);
 
+    // user-collection-data에 새로 회원가입한 유저의 기본 인벤토리 데이터 생성
+    const fishCollection = database.collection('user-collection-data');
+    const fishData = {
+      userIdx: userData.idx,
+      collections: [],
+    };
+    await fishCollection.insertOne(fishData);
+
     return {
       statusCode: 200,
       body: JSON.stringify({ message: 'Data inserted successfully', result }),

@@ -213,38 +213,40 @@ const Shop = ({ isOpen, onClose, coin, setCoin, userInventory, setInventory }) =
           {activeTab === 'sell' && (
             <>
               <ol className="m-5 flex flex-col flex-nowrap gap-3">
-                {currentInventoryItems.map(({ code, name, quantity, des, price }) => (
-                  <li
-                    className="flex flex-row flex-nowrap items-center rounded-md border border-slate-300 p-2 text-center shadow-md"
-                    key={code}
-                  >
-                    <span className="flex-1">{name}</span>
-                    <span className="flex-1">
-                      <FontAwesomeIcon className="mr-2 text-yellow-400" icon={faCoins} />
-                      {price}
-                    </span>
-                    <button
-                      type="button"
-                      className="h-8 w-10 rounded-md border border-slate-300 text-sm text-red-500 shadow-md hover:bg-red-500 hover:text-white"
-                      onClick={() => {
-                        setSelectedItem({ name, code, quantity, des, price });
-                        sellConfirm(quantity);
-                      }}
+                {currentInventoryItems
+                  .filter(({ quantity }) => quantity > 0)
+                  .map(({ code, name, quantity, des, price }) => (
+                    <li
+                      className="flex flex-row flex-nowrap items-center rounded-md border border-slate-300 p-2 text-center shadow-md"
+                      key={code}
                     >
-                      판매
-                    </button>
-                    <button
-                      type="button"
-                      className="ml-2 h-8 w-8 rounded-md border border-slate-300 text-blue-400 shadow-md hover:bg-blue-400 hover:text-white"
-                      onClick={() => {
-                        setSelectedItem({ name, code, des });
-                        alertModal.openModal();
-                      }}
-                    >
-                      <FontAwesomeIcon className="" icon={faCircleInfo} />
-                    </button>
-                  </li>
-                ))}
+                      <span className="flex-1">{name}</span>
+                      <span className="flex-1">
+                        <FontAwesomeIcon className="mr-2 text-yellow-400" icon={faCoins} />
+                        {price}
+                      </span>
+                      <button
+                        type="button"
+                        className="h-8 w-10 rounded-md border border-slate-300 text-sm text-red-500 shadow-md hover:bg-red-500 hover:text-white"
+                        onClick={() => {
+                          setSelectedItem({ name, code, quantity, des, price });
+                          sellConfirm(quantity);
+                        }}
+                      >
+                        판매
+                      </button>
+                      <button
+                        type="button"
+                        className="ml-2 h-8 w-8 rounded-md border border-slate-300 text-blue-400 shadow-md hover:bg-blue-400 hover:text-white"
+                        onClick={() => {
+                          setSelectedItem({ name, code, des });
+                          alertModal.openModal();
+                        }}
+                      >
+                        <FontAwesomeIcon className="" icon={faCircleInfo} />
+                      </button>
+                    </li>
+                  ))}
               </ol>
               <footer className="absolute bottom-0 left-[164px] mb-5 flex flex-row flex-nowrap items-center justify-center gap-6">
                 <button type="button" onClick={() => paginate(currentPage - 1)}>
