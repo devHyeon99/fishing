@@ -58,7 +58,7 @@ const IsOpenInventory = ({ isOpen, onClose, userInventory }) => {
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="relative min-h-[500px] text-blue-500">
+        <div className="relative min-h-[500px] text-blue-400">
           <h1 className="rounded-t-md bg-blue-400 py-4 text-center text-lg font-bold text-white">
             인벤토리
           </h1>
@@ -70,7 +70,7 @@ const IsOpenInventory = ({ isOpen, onClose, userInventory }) => {
                   className="flex flex-row flex-nowrap items-center rounded-md border border-slate-300 p-2 text-center shadow-md"
                   key={code}
                 >
-                  <span className="flex-1">{name}</span>
+                  <span className="flex-1 font-medium">{name}</span>
                   <span className="flex-1">{quantity}</span>
                   <button
                     type="button"

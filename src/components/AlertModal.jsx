@@ -14,7 +14,7 @@ const AlertModal = ({ isOpen, children, onClose }) => {
       onClick={onClose}
     >
       <div
-        className="relative min-h-[100px] min-w-[400px] rounded-md bg-white shadow-lg"
+        className="relative min-h-[100px] min-w-[400px] max-w-[400px] rounded-md bg-white shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
         <button type="button" className="absolute right-2 top-2 z-10" onClick={onClose}>

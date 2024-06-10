@@ -16,7 +16,8 @@ const getUserInventory = async (userIdx) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result = await response.json();
-    return result.items; // result를 반환
+    // quantity가 1 이상인 아이템만 필터링하여 반환
+    return result.items.filter((item) => item.quantity > 0);
   } catch (error) {
     console.error('Error fetching items:', error);
     return null;

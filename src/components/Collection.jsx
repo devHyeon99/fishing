@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { Modal, AlertModal } from './index';
 import { fetchItems, setUserCollection, setUserInventory } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleChevronLeft, faCircleChevronRight } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCircleChevronLeft,
+  faCircleChevronRight,
+  faCircleInfo,
+} from '@fortawesome/free-solid-svg-icons';
 import useModal from '../hooks/useModal';
 
 const IsOpenCollection = ({
@@ -14,6 +18,7 @@ const IsOpenCollection = ({
   setClientInven,
 }) => {
   const [inventory, setInventory] = useState({});
+  const [itemFullData, setItemFullData] = useState([]);
   const [itemsData, setItemsData] = useState([]);
   const [collection, setCollection] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,6 +33,7 @@ const IsOpenCollection = ({
   const userIdx = JSON.parse(localStorage.getItem('userIdx'));
 
   const basicAlertModal = useModal();
+  const itemInfoModal = useModal();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +41,7 @@ const IsOpenCollection = ({
         const data = await fetchItems();
         const values = Object.values(data).flatMap((value) => value);
         setItemsData(values.slice(1));
+        setItemFullData(data);
       } catch (error) {
         console.error('Error fetching items data:', error);
       }
@@ -109,24 +116,45 @@ const IsOpenCollection = ({
     basicAlertModal.openModal();
   };
 
+  // 버튼 렌더링
   const renderButton = (item) => {
+    // inventory가 배열인지 확인
+    if (!Array.isArray(inventory)) {
+      return;
+    }
+
     const isRegistered = collection.some((col) => col.name === item.name);
+    const inventoryItem = inventory.find((inv) => inv.code === item.code);
+    const isAvailable = inventoryItem && inventoryItem.quantity > 10;
+
+    let statusText = '미등록';
+    let statusColor = 'text-gray-300';
+    let buttonProps = {
+      className:
+        'h-8 w-[74px] rounded-md border border-slate-300 font-medium text-blue-400 shadow-md hover:bg-blue-400 hover:text-white',
+      onClick: () => onCollection(item.code, item.name),
+      disabled: false,
+    };
+
+    if (isRegistered) {
+      statusText = '등록됨';
+      statusColor = 'text-red-400';
+      buttonProps.className +=
+        ' cursor-not-allowed text-gray-300 hover:bg-inherit hover:text-gray-300';
+      buttonProps.disabled = true;
+    } else if (isAvailable) {
+      statusText = '등록가능';
+      statusColor = 'text-blue-400';
+    }
+
     return (
       <li
         className="flex flex-row flex-nowrap items-center rounded-md border border-slate-300 p-2 text-center shadow-md"
         key={item.code}
       >
-        <span className="flex-1 text-blue-400">{item.name}</span>
-        <span className={`flex-1 font-semibold ${isRegistered ? 'text-red-400' : 'text-gray-300'}`}>
-          {isRegistered ? '등록됨' : '미등록'}
-        </span>
-        <button
-          className={`h-8 w-[74px] rounded-md border border-slate-300 font-semibold text-blue-400 shadow-md  ${isRegistered ? 'cursor-not-allowed text-gray-300' : 'hover:bg-blue-400 hover:text-white'}`}
-          onClick={() => onCollection(item.code, item.name)}
-          disabled={isRegistered}
-        >
-          등록
-        </button>
+        <span className="flex-1 font-medium text-blue-400">{item.name}</span>
+        <span className={`flex-1 ${statusColor}`}>{statusText}</span>
+        <button {...buttonProps}>등록</button>
       </li>
     );
   };
@@ -136,6 +164,11 @@ const IsOpenCollection = ({
       <Modal isOpen={isOpen} onClose={onClose}>
         <h1 className="rounded-t-md bg-blue-400 py-4 text-center text-lg font-bold text-white">
           도감등록
+          <FontAwesomeIcon
+            className="ml-2 cursor-pointer"
+            icon={faCircleInfo}
+            onClick={itemInfoModal.openModal}
+          />
         </h1>
         <ol className="m-5 flex flex-col flex-nowrap gap-3">{currentItems.map(renderButton)}</ol>
         <footer className="absolute bottom-0 left-[164px] mb-5 flex flex-row flex-nowrap items-center justify-center gap-6">
@@ -157,6 +190,50 @@ const IsOpenCollection = ({
       <AlertModal isOpen={basicAlertModal.isOpen} onClose={basicAlertModal.closeModal}>
         <h2 className="rounded-t-md bg-blue-400 p-4 text-center font-semibold text-white">알림</h2>
         <span className="block py-4 text-center text-blue-500">{contentModal}</span>
+      </AlertModal>
+      <AlertModal isOpen={itemInfoModal.isOpen} onClose={itemInfoModal.closeModal}>
+        <h2 className="rounded-t-md bg-blue-400 p-4 text-center font-semibold text-white">
+          아이템 확률 정보
+        </h2>
+
+        <div className="block max-h-[300px] items-center justify-center gap-y-3 overflow-y-auto py-3 font-medium text-blue-400">
+          {itemFullData && itemFullData.chaos && (
+            <span className="mb-3 flex flex-col text-center">
+              카오스 0.1%
+              <span>({itemFullData.chaos.map((item) => item.name).join(', ')})</span>
+            </span>
+          )}
+          {itemFullData && itemFullData.legend && (
+            <span className="mb-3 flex flex-col text-center">
+              레전드 1%
+              <br />({itemFullData.legend.map((item) => item.name).join(', ')})
+            </span>
+          )}
+          {itemFullData && itemFullData.unique && (
+            <span className="mb-3 flex flex-col text-center">
+              유니크 5%
+              <br />({itemFullData.unique.map((item) => item.name).join(', ')})
+            </span>
+          )}
+          {itemFullData && itemFullData.epic && (
+            <span className="mb-3 flex flex-col text-center">
+              에픽 10%
+              <br />({itemFullData.epic.map((item) => item.name).join(', ')})
+            </span>
+          )}
+          {itemFullData && itemFullData.rare && (
+            <span className="mb-3 flex flex-col text-center">
+              레어 34%
+              <br />({itemFullData.rare.map((item) => item.name).join(', ')})
+            </span>
+          )}
+          {itemFullData && itemFullData.normal && (
+            <span className="mb-3 flex flex-col text-center">
+              노말 50%
+              <br />({itemFullData.normal.map((item) => item.name).join(', ')})
+            </span>
+          )}
+        </div>
       </AlertModal>
     </>
   );

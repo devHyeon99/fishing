@@ -152,7 +152,7 @@ function Main() {
               className="absolute bottom-3 left-3 select-none text-yellow-400"
               icon={faCoins}
             />
-            <span className="absolute bottom-[10px] left-8 select-none text-sm font-semibold text-blue-400 ">
+            <span className="absolute bottom-[12px] left-8 select-none text-xs font-semibold text-blue-400 md:bottom-[10px] md:text-sm ">
               {coin}
             </span>
             <ExperienceBar

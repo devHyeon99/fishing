@@ -13,36 +13,43 @@ const fishing = async (setHistory, currentExp, setCurrentExp, setInventory) => {
     let selectedItem;
     let exp;
     let eventExp = 2;
+    let grade;
 
     switch (true) {
       case rand < 0.1:
         selectedItem = items.chaos[Math.floor(Math.random() * items.chaos.length)];
         exp = currentExp + 100 * eventExp;
+        grade = '카오스';
         setCurrentExp(exp);
         break;
       case rand < 1:
         selectedItem = items.legend[Math.floor(Math.random() * items.legend.length)];
         exp = currentExp + 50 * eventExp;
+        grade = '레전드';
         setCurrentExp(exp);
         break;
       case rand < 6:
         selectedItem = items.unique[Math.floor(Math.random() * items.unique.length)];
         exp = currentExp + 25 * eventExp;
+        grade = '유니크';
         setCurrentExp(exp);
         break;
       case rand < 16:
-        selectedItem = items.rare[Math.floor(Math.random() * items.rare.length)];
+        selectedItem = items.epic[Math.floor(Math.random() * items.epic.length)];
         exp = currentExp + 10 * eventExp;
+        grade = '에픽';
         setCurrentExp(exp);
         break;
       case rand < 50:
-        selectedItem = items.normal[Math.floor(Math.random() * items.normal.length)];
+        selectedItem = items.rare[Math.floor(Math.random() * items.rare.length)];
         exp = currentExp + 5 * eventExp;
+        grade = '레어';
         setCurrentExp(exp);
         break;
       default:
-        selectedItem = items.etc[Math.floor(Math.random() * items.etc.length)];
+        selectedItem = items.normal[Math.floor(Math.random() * items.normal.length)];
         exp = currentExp + 2 * eventExp;
+        grade = '노말';
         setCurrentExp(exp);
         break;
     }
@@ -69,7 +76,7 @@ const fishing = async (setHistory, currentExp, setCurrentExp, setInventory) => {
       }
     });
 
-    setHistory(`${selectedItem.name}을(를) 획득하셨습니다.`);
+    setHistory(`[${grade}] ${selectedItem.name}를(을) 획득하셨습니다.`);
   } catch (error) {
     console.error('Error fishing:', error);
     setHistory('아이템을 획득하는 중 오류가 발생했습니다.');
