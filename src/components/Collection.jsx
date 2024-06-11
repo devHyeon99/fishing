@@ -1,12 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Modal, AlertModal } from './index';
-import { fetchItems, setUserCollection, setUserInventory } from '../utils';
+import { getEtcItems, setUserCollection, setUserInventory } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCircleChevronLeft,
-  faCircleChevronRight,
-  faCircleInfo,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCircleChevronLeft, faCircleChevronRight } from '@fortawesome/free-solid-svg-icons';
 import useModal from '../hooks/useModal';
 
 const IsOpenCollection = ({
@@ -38,9 +34,11 @@ const IsOpenCollection = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchItems();
-        const values = Object.values(data).flatMap((value) => value);
-        setItemsData(values.slice(1));
+        const data = await getEtcItems();
+        const values = Object.values(data)
+          .flatMap((value) => value)
+          .filter((item) => typeof item === 'object');
+        setItemsData(values);
         setItemFullData(data);
       } catch (error) {
         console.error('Error fetching items data:', error);
@@ -164,12 +162,14 @@ const IsOpenCollection = ({
       <Modal isOpen={isOpen} onClose={onClose}>
         <h1 className="rounded-t-md bg-blue-400 py-4 text-center text-lg font-bold text-white">
           도감등록
-          <FontAwesomeIcon
-            className="ml-2 cursor-pointer"
-            icon={faCircleInfo}
-            onClick={itemInfoModal.openModal}
-          />
         </h1>
+        <button
+          type="button"
+          className="absolute left-5 top-5 rounded-sm bg-white px-1 py-0.5 text-xs font-semibold text-blue-400 shadow-md"
+          onClick={itemInfoModal.openModal}
+        >
+          확률정보
+        </button>
         <ol className="m-5 flex flex-col flex-nowrap gap-3">{currentItems.map(renderButton)}</ol>
         <footer className="absolute bottom-0 left-[164px] mb-5 flex flex-row flex-nowrap items-center justify-center gap-6">
           <button type="button" onClick={() => paginate(currentPage - 1)}>

@@ -17,10 +17,14 @@ const ExperienceBar = ({ currentExp, setCurrentExp, level, setLevel }) => {
   }, [currentExp, maxExp, setLevel, setCurrentExp]);
 
   useEffect(() => {
-    if (currentExp === 0) {
-      setUserExp(userIdx, 0);
-      setUserLevel(userIdx, level);
-    }
+    const updateExpAndLevel = async () => {
+      if (currentExp === 0) {
+        await setUserExp(userIdx, 0);
+        await setUserLevel(userIdx, level);
+      }
+    };
+
+    updateExpAndLevel();
   }, [level, currentExp]);
 
   // 경험치 바의 너비를 퍼센트로 계산합니다.

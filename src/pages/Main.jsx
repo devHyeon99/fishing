@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeXmark, faVolumeHigh, faStore, faCoins } from '@fortawesome/free-solid-svg-icons';
-import { Button, ExperienceBar } from '../components';
+import { Button, ExperienceBar, Tooltip } from '../components';
 import {
   fishing,
   fetchNotice,
-  fetchItems,
+  getEtcItems,
   fetchShop,
   getUserInventory,
   getUser,
   getUserCollection,
+  getConsumItems,
 } from '../utils';
 import useModal from '../hooks/useModal';
 import catImg from '../assets/cat.png';
@@ -75,7 +76,8 @@ function Main() {
 
     fetchData();
     fetchShop();
-    fetchItems();
+    getEtcItems();
+    getConsumItems();
   }, []);
 
   useEffect(() => {
@@ -116,6 +118,36 @@ function Main() {
     }, 1500);
   };
 
+  /* // 자동 낚시 코드 (임시 비활성화)
+  const [fishingInterval, setFishingInterval] = useState(null);
+  const currentExpRef = useRef(currentExp);
+
+  useEffect(() => {
+    currentExpRef.current = currentExp;
+  }, [currentExp]);
+
+  const handleFishing = () => {
+    if (fishingInterval) {
+      setHistory('낚시가 중단 되었습니다...');
+      clearInterval(fishingInterval);
+      setFishingInterval(null);
+    } else {
+      setHistory('잠시 후 낚시가 시작됩니다...');
+      const interval = setInterval(() => {
+        if (isFishing) return;
+
+        setIsFishing(true);
+        setHistory('낚시중...');
+        setTimeout(async () => {
+          await fishing(setHistory, currentExpRef.current, setCurrentExp, setUserInventory);
+          togglePlay();
+          await setIsFishing(false);
+        }, 3000);
+      }, 5000);
+      setFishingInterval(interval);
+    }
+  }; */
+
   if (loading) {
     return (
       <>
@@ -148,10 +180,13 @@ function Main() {
               낚시중...
             </span>
             <img className="h-36 w-36 animate-bounce" src={catImg} alt="" />
-            <FontAwesomeIcon
-              className="absolute bottom-3 left-3 select-none text-yellow-400"
-              icon={faCoins}
-            />
+            <Tooltip
+              message="보유 코인"
+              style={{ position: 'absolute', left: 10, bottom: 8 }}
+              position={{ x: -18, y: -50 }}
+            >
+              <FontAwesomeIcon className="select-none text-yellow-400" icon={faCoins} />
+            </Tooltip>
             <span className="absolute bottom-[12px] left-8 select-none text-xs font-semibold text-blue-400 md:bottom-[10px] md:text-sm ">
               {coin}
             </span>
@@ -161,11 +196,17 @@ function Main() {
               setCurrentExp={setCurrentExp}
               setLevel={setLevel}
             ></ExperienceBar>
-            <FontAwesomeIcon
-              className="absolute bottom-3 right-10 select-none text-blue-500 hover:cursor-pointer"
-              onClick={shopModal.openModal}
-              icon={faStore}
-            />
+            <Tooltip
+              message="상점"
+              style={{ position: 'absolute', right: 40, bottom: 8 }}
+              position={{ x: -6, y: -50 }}
+            >
+              <FontAwesomeIcon
+                className="select-none text-blue-500 hover:cursor-pointer"
+                onClick={shopModal.openModal}
+                icon={faStore}
+              />
+            </Tooltip>
             <Suspense>
               {shopModal.isOpen && (
                 <IsOpenShop
@@ -178,11 +219,17 @@ function Main() {
                 />
               )}
             </Suspense>
-            <FontAwesomeIcon
-              className="absolute bottom-3 right-3 select-none text-blue-500 hover:cursor-pointer"
-              icon={isPlaying ? faVolumeHigh : faVolumeXmark}
-              onClick={isPlay}
-            />
+            <Tooltip
+              message="배경음악"
+              style={{ position: 'absolute', right: 10, bottom: 8 }}
+              position={{ x: -20, y: -50 }}
+            >
+              <FontAwesomeIcon
+                className="select-none text-blue-500 hover:cursor-pointer"
+                icon={isPlaying ? faVolumeHigh : faVolumeXmark}
+                onClick={isPlay}
+              />
+            </Tooltip>
           </div>
           <div
             className={`max-h-[100px] flex-grow-[1] content-center rounded-b-md bg-white text-center font-medium text-blue-500 ${isFishing && 'font-extrabold'}`}

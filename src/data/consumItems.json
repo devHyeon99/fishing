@@ -1,0 +1,19 @@
+{
+  "category": "consume",
+  "items": [
+    {
+      "code": "con01",
+      "name": "선물상자",
+      "des": "선물상자를 열면 특별한 일이 일어날 것 같다.",
+      "price": 0,
+      "useable": true
+    },
+    {
+      "code": "con02",
+      "name": "의문의 보따리",
+      "des": "어서 보따리를 풀어보자 특별한 일이 일어날 것 같다.",
+      "price": 0,
+      "useable": true
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 export { default as fishing } from './fishing';
 export { default as setUserCollection } from './setUserCollection';
-export { default as fetchItems } from './fetchItems';
+export { default as getEtcItems } from './getEtcItems';
 export { default as fetchNotice } from './fetchNotice';
 export { default as fetchShop } from './fetchShop';
 export { default as updateNotice } from './updateNotice';
@@ -12,3 +12,5 @@ export { default as setUserExp } from './setUserExp';
 export { default as setUserLevel } from './setUserLevel';
 export { default as setUserCoin } from './setUserCoin';
 export { default as getUserCollection } from './getUserCollection';
+export { default as getConsumItems } from './getConsumItems';
+export { default as giftBox } from './giftBox';

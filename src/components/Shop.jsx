@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { fetchShop, fetchItems, setUserCoin, setUserInventory } from '../utils';
+import { fetchShop, getEtcItems, setUserCoin, setUserInventory, getConsumItems } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCircleInfo,
@@ -65,7 +65,8 @@ const Shop = ({ isOpen, onClose, coin, setCoin, userInventory, setInventory }) =
           return { ...item, ...itemInfo };
         })
       );
-      setInventoryItems(items);
+      const itemsWithPrice = items.filter((item) => item.price !== 0);
+      setInventoryItems(itemsWithPrice);
     };
     fetchInventoryItems();
   }, [userInventory]);
@@ -333,16 +334,19 @@ const getItemInfo = async (itemCode) => {
   let itemInfo = null;
   try {
     // 서버에서 데이터 가져오기
-    const itemsData = await fetchItems();
+    const itemsData = await getEtcItems();
+    const conItemsData = await getConsumItems();
 
-    // 객체의 모든 값들을 하나의 배열로 만듭니다.
-    const allItems = Object.values(itemsData).reduce((acc, val) => {
-      // 배열이면 합치고, 아니면 그대로 반환 (예: _id 필드)
-      if (Array.isArray(val)) {
-        return acc.concat(val);
-      }
-      return acc;
-    }, []);
+    // itemsData와 conItemsData의 모든 값들을 하나의 배열로
+    const allItems = [...Object.values(itemsData), ...Object.values(conItemsData)].reduce(
+      (acc, val) => {
+        if (Array.isArray(val)) {
+          return acc.concat(val);
+        }
+        return acc;
+      },
+      []
+    );
 
     // allItems에서 itemCode에 맞는 아이템을 찾습니다.
     itemInfo = allItems.find((item) => item.code === itemCode);

@@ -1,10 +1,10 @@
-import { fetchItems, setUserInventory, setUserExp } from '../utils';
+import { getEtcItems, setUserInventory, setUserExp } from '../utils';
 
 const fishing = async (setHistory, currentExp, setCurrentExp, setInventory) => {
   const userIdx = JSON.parse(localStorage.getItem('userIdx'));
 
   try {
-    const items = await fetchItems();
+    const items = await getEtcItems();
     if (!items) {
       throw new Error('Failed to fetch items');
     }

@@ -1,8 +1,8 @@
-let cachedItems = null;
+let consumItems = null;
 
-const fetchItems = async () => {
-  if (cachedItems) {
-    return cachedItems;
+const getConsumItems = async () => {
+  if (consumItems) {
+    return consumItems;
   }
 
   try {
@@ -11,12 +11,13 @@ const fetchItems = async () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result = await response.json();
-    cachedItems = result[0]; // 첫 번째 항목만 사용
-    return cachedItems;
+    consumItems = result.find((item) => item.category === 'consume');
+
+    return consumItems;
   } catch (error) {
     console.error('Error fetching items:', error);
     return null;
   }
 };
 
-export default fetchItems;
+export default getConsumItems;

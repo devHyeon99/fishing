@@ -6,3 +6,4 @@ export { default as ConfirmModal } from './ConfirmModal';
 export { default as AlertModal } from './AlertModal';
 export { default as ExperienceBar } from './ExperienceBar';
 export { default as Shop } from './Shop';
+export { default as Tooltip } from './Tooltip';
